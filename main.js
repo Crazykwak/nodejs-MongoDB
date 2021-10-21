@@ -5,7 +5,9 @@ var url = require('url');
 var app = http.createServer(function(request,response){
     var _url = request.url;
     var queryData = new URL('http://localhost:3000' + _url).searchParams;
-    console.log(queryData.get('id'));
+//      var queryData = url.parse(request.url, true).query;
+    var rea = new url.URLSearchParams('id');
+    console.log(queryData.id);
     if(_url == '/'){
       _url = '/index.html';
     }
