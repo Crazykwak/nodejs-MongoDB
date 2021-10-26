@@ -1,20 +1,20 @@
 const express = require('express');
 const bodyParser= require('body-parser')
 const app = express();
-
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true})) 
+var db;
+const MongoClient = require('mongodb').MongoClient;
+MongoClient.connect('mongodb+srv://admin:86218621@cluster0.s0k87.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', (err, client) =>{
 
-app.listen(8080, function(){
-    console.log('listening on 8080');
-});
+    if(err) {return console.log(err)};
+    db = client.db('TodoList');
 
-app.get('/pet', function(req, res){
-    res.send('펫용품 쇼핑할 수 있는 페이지 입니다.');
-});
+    app.listen(8080, function(){
+        console.log('listening on 8080');
+    });
 
-app.get('/beauty', function(req, res){
-    res.send('뷰티용용품이요ㅋ');
-});
+})
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -25,6 +25,12 @@ app.get('/write', function(req, res){
 });
 
 app.post('/add', function(req, res){
-    console.log(req.body);
-    res.send('전송완료')
+    res.send('전송완료');
+    db.collection('post').insertOne({제목 : req.body.title, 날짜 : req.body.date}, (err, fin) =>{
+        console.log('저장완료');
+    });
   });
+
+  app.get('/list', function(req, res){
+    res.render('list.ejs');
+});
