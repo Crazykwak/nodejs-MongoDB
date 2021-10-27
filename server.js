@@ -32,5 +32,11 @@ app.post('/add', function(req, res){
   });
 
   app.get('/list', function(req, res){
-    res.render('list.ejs');
+
+    db.collection('post').find().toArray((err, fin) => {
+        console.log(fin);
+        res.render('list.ejs', {posts : fin});
+    });
+
+
 });
