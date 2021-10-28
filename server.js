@@ -26,17 +26,33 @@ app.get('/write', function(req, res){
 
 app.post('/add', function(req, res){
     res.send('전송완료');
-    db.collection('post').insertOne({제목 : req.body.title, 날짜 : req.body.date}, (err, fin) =>{
-        console.log('저장완료');
+    db.collection('counter').findOne({name : '게시물개수'}, (err, result) => {
+        const total = result.totalPost
+
+        db.collection('post').insertOne({_id : total + 1, 제목 : req.body.title, 날짜 : req.body.date}, (err, fin) =>{
+            console.log('저장완료');
+            db.collection('counter').updateOne({name : '게시물개수'},{ $inc : {totalPost : 1}}, (err, result) => {
+                if(err) return console.log(err);
+            })
+        });
+
+        
+
     });
+
   });
 
   app.get('/list', function(req, res){
-
     db.collection('post').find().toArray((err, fin) => {
-        console.log(fin);
         res.render('list.ejs', {posts : fin});
     });
-
-
 });
+
+app.delete('/delete', (req, res) => {
+    req.body._id = req.body._id * 1;
+    db.collection('post').deleteOne(req.body, (err, result) => {
+        console.log('삭제완료');
+    })
+    res.send('삭제완료');
+
+})
