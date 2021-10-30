@@ -51,7 +51,6 @@ app.post('/add', function(req, res){
 app.delete('/delete', (req, res) => {
     req.body._id = req.body._id * 1;
     db.collection('post').deleteOne(req.body, (err, result) => {
-        console.log('삭제완료');
     })
     res.send('삭제완료');
 
