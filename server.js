@@ -52,6 +52,6 @@ app.delete('/delete', (req, res) => {
     req.body._id = req.body._id * 1;
     db.collection('post').deleteOne(req.body, (err, result) => {
     })
-    res.send('삭제완료');
+    res.status(200).send({ message : '성공했습니다.'});
 
 })

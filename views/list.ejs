@@ -46,13 +46,19 @@
       <script>
 
         $('.delete').click(function(e){
+          let textNum = e.target.dataset.id;
+          let nowClick = $(this);
           $.ajax({
             method : 'DELETE',
             url : '/delete',
-            data : { _id : e.target.dataset.id }
+            data : { _id : textNum }
           }).done(function(result){
-            console.log($);
-          })
+            console.log('성공');
+            nowClick.parent('li').fadeOut();
+
+          }).fail(function(){
+
+          });
         });
 
       </script>
