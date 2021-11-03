@@ -1,10 +1,12 @@
-const express = require('express');
-const bodyParser= require('body-parser')
-const app = express();
+const express = require('express');  // 익스프레스
+const bodyParser= require('body-parser')  //데이터를 body로 때겠다.
+const app = express();  
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true})) 
+
 const methodOverride = require('method-override');
-app.use(methodOverride('_method'));
+app.use(methodOverride('_method')); //오버라이드 사용
+
 var db;
 
 app.use('/public', express.static('public'));
@@ -62,15 +64,12 @@ app.delete('/delete', (req, res) => {
 
 app.get('/detail/:id', function(req, res){
     db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result){
-        console.log(result);
         res.render('detail.ejs', { data : result});
     })
 })
 
 app.get('/edit/:id', function(req,res){
     db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result){
-        console.log(result);
-
         res.render('edit.ejs', {data : result});
     })
 
@@ -78,7 +77,6 @@ app.get('/edit/:id', function(req,res){
 
 app.put('/edit', function(req, res){
     db.collection('post').updateOne({_id: parseInt(req.body.id) },{ $set : { 제목 : req.body.title, 날짜 : req.body.date}}, function(err, result){
-        console.log('수정완료');
         if(err) return console.log(err);
         res.redirect('/list');
     })
