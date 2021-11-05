@@ -132,7 +132,7 @@ passport.deserializeUser(function(ID, done){
 });
 
 app.get('/fail', function(req, res){
-    res.render('fail.ejs')
+    res.render('fail.ejs');
 });
 
 app.get('/mypage', isLogin ,function(req, res){
@@ -148,3 +148,7 @@ function isLogin(req, res, next){
     }
 };
 
+
+app.get('/signup', function(req, res){
+    res.render('fail.ejs');
+})
