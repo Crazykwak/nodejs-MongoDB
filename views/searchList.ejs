@@ -17,7 +17,7 @@
 
 
 
-      <h4 class="ml-2 my-3 text-center">서버에서 가져온 할일 리스트</h4>
+      <h4 class="ml-2 my-3 text-center">검색결과 리스트</h4>
 
       <div class="container input-group mb-2">
         <input class="form-control" id="search-input">
@@ -29,7 +29,7 @@
       <ul class="list-group">
         <% for (var i = 0; i < posts.length; i++){ %>
         <li class="list-group-item">
-          <p>글 번호 : <%= posts[i]._id %></p>
+            <p>글 번호 : <%= posts[i]._id %></p>
           <a class="detail" href="/detail/<%= parseInt(posts[i]._id) %>"><h4> 할일 제목 : <%= posts[i].제목 %> </h4></a>
           <p> 할일 마감날짜 : <%= posts[i].날짜 %> </p>
           <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">삭제</button>

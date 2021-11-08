@@ -3,7 +3,7 @@ const bodyParser= require('body-parser')  //데이터를 body로 때겠다.
 const app = express();  
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true})) 
-
+require('dotenv').config()
 const methodOverride = require('method-override');
 app.use(methodOverride('_method')); //오버라이드 사용
 
@@ -11,7 +11,7 @@ var db;
 
 app.use('/public', express.static('public'));
 const MongoClient = require('mongodb').MongoClient;
-MongoClient.connect('mongodb+srv://admin:86218621@cluster0.s0k87.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', (err, client) =>{
+MongoClient.connect(process.env.DB_URL, (err, client) =>{
 
     if(err) {return console.log(err)};
     db = client.db('TodoList');
@@ -151,4 +151,25 @@ function isLogin(req, res, next){
 
 app.get('/signup', function(req, res){
     res.render('fail.ejs');
+})
+
+
+app.get('/search', (req, res) => {
+    console.log(req.query.value);
+    const searchOption = [
+        {
+            $search: {
+                index: 'titleSearch',
+                text: {
+                    query: req.query.value,
+                    path: '제목'
+                }
+            }
+        },
+        { $sort : {_id : 1 } }
+    ]
+    db.collection('post').aggregate(searchOption).toArray((err, result)=>{
+        console.log(result);
+        res.render('searchList.ejs', {posts : result});
+    })
 })
