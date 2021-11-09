@@ -156,6 +156,7 @@ app.get('/signup', function(req, res){
 
 app.get('/search', (req, res) => {
     console.log(req.query.value);
+    
     const searchOption = [
         {
             $search: {
