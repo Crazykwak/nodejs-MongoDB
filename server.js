@@ -7,6 +7,7 @@ require('dotenv').config()
 const methodOverride = require('method-override');
 app.use(methodOverride('_method')); //오버라이드 사용
 
+app.use('/shop',require('./routes/shop.js'));
 var db;
 
 app.use('/public', express.static('public'));
@@ -19,7 +20,6 @@ MongoClient.connect(process.env.DB_URL, (err, client) =>{
     app.listen(8080, function(){
         console.log('listening on 8080');
     });
-
 })
 
 app.get('/', function(req, res){
@@ -41,9 +41,6 @@ app.post('/add', function(req, res){
                 if(err) return console.log(err);
             })
         });
-
-        
-
     });
 
   });
@@ -173,4 +170,4 @@ app.get('/search', (req, res) => {
         console.log(result);
         res.render('searchList.ejs', {posts : result});
     })
-})
+});
