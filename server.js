@@ -30,20 +30,7 @@ app.get('/write', function(req, res){
     res.render('write.ejs');
 });
 
-app.post('/add', function(req, res){
-    res.send('전송완료');
-    db.collection('counter').findOne({name : '게시물개수'}, (err, result) => {
-        const total = result.totalPost
 
-        db.collection('post').insertOne({_id : total + 1, 제목 : req.body.title, 날짜 : req.body.date}, (err, fin) =>{
-            console.log('저장완료');
-            db.collection('counter').updateOne({name : '게시물개수'},{ $inc : {totalPost : 1}}, (err, result) => {
-                if(err) return console.log(err);
-            })
-        });
-    });
-
-  });
 
   app.get('/list', function(req, res){
     db.collection('post').find().toArray((err, fin) => {
@@ -51,13 +38,6 @@ app.post('/add', function(req, res){
     });
 });
 
-app.delete('/delete', (req, res) => {
-    req.body._id = req.body._id * 1;
-    db.collection('post').deleteOne(req.body, (err, result) => {
-    })
-    res.status(200).send({ message : '성공했습니다.'});
-
-})
 
 app.get('/detail/:id', function(req, res){
     db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result){
@@ -128,6 +108,7 @@ passport.deserializeUser(function(ID, done){
     })
 });
 
+
 app.get('/fail', function(req, res){
     res.render('fail.ejs');
 });
@@ -148,6 +129,45 @@ function isLogin(req, res, next){
 
 app.get('/signup', function(req, res){
     res.render('fail.ejs');
+})
+
+app.post('/add', function(req, res){
+    res.send('전송완료');
+    db.collection('counter').findOne({name : '게시물개수'}, (err, result) => {
+        const total = result.totalPost
+
+        const saveData = {_id : total + 1, 작성자 : req.user._id, 제목 : req.body.title, 날짜 : req.body.date, }
+
+        db.collection('post').insertOne(saveData , (err, fin) =>{
+            console.log('저장완료');
+            db.collection('counter').updateOne({name : '게시물개수'},{ $inc : {totalPost : 1}}, (err, result) => {
+                if(err) return console.log(err);
+            })
+        });
+    });
+  });
+
+  app.delete('/delete', (req, res) => {
+    req.body._id = req.body._id * 1;
+
+    const deleteData = {_id : req.body._id, 작성자 : req.user._id}
+
+    db.collection('post').deleteOne(deleteData, (err, result) => {
+        if(err) {
+            console.log(err);
+            alert('니 글 아님');
+        };
+    })
+   
+    res.status(200).send({ message : '성공했습니다.'});
+
+})
+
+
+app.post('/register', (req, res)=>{
+    db.collection('login').insertOne({id: req.body.id, pw : req.body.pw}, (err, reslut) => {
+        res.redirect('/');
+    })
 })
 
 
@@ -171,3 +191,29 @@ app.get('/search', (req, res) => {
         res.render('searchList.ejs', {posts : result});
     })
 });
+
+
+let multer = require('multer');
+var storage = multer.diskStorage({
+    destination : (req, file, cb) => {
+        cb(null, './public/image');
+    },
+    filename : (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+var upload = multer({storage : storage})
+
+
+app.get('/upload', (req, res) => {
+    res.render('upload.ejs');
+});
+
+app.post('/upload', upload.single('profileIMG'), (req, res) => {
+    res.send('업로드 완료')
+});
+
+app.get('/image/:imgName', (req, res) => {
+    res.sendFile(__dirname + '/public/image/' + req.params.imgName)
+})
