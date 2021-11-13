@@ -139,7 +139,6 @@ app.post('/add', function(req, res){
         const saveData = {_id : total + 1, 작성자 : req.user._id, 제목 : req.body.title, 날짜 : req.body.date, }
 
         db.collection('post').insertOne(saveData , (err, fin) =>{
-            console.log('저장완료');
             db.collection('counter').updateOne({name : '게시물개수'},{ $inc : {totalPost : 1}}, (err, result) => {
                 if(err) return console.log(err);
             })
