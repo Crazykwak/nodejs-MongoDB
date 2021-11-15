@@ -216,3 +216,18 @@ app.post('/upload', upload.single('profileIMG'), (req, res) => {
 app.get('/image/:imgName', (req, res) => {
     res.sendFile(__dirname + '/public/image/' + req.params.imgName)
 })
+
+app.post('/chatOn', (req, res) => {
+    console.log('성공');
+    let today = new Date();
+    let docu = {member : [req.body.write, req.user._id], today, title : '새로생긴 채팅방'}
+    db.collection('chatRoom').insertOne(docu, (err, result) => {
+        console.log(req.user._id);
+    })
+});
+
+app.get('/chat', (req, res) => {
+    db.collection('chatRoom').find().toArray((err, result)=>{
+        res.render('chat.ejs', {data : result})
+    })
+})
