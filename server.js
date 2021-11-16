@@ -21,6 +21,7 @@ MongoClient.connect(process.env.DB_URL, (err, client) =>{
         console.log('listening on 8080');
     });
 })
+const { ObjectId } = require('mongodb');
 
 app.get('/', function(req, res){
     res.render('index.ejs');
@@ -217,17 +218,31 @@ app.get('/image/:imgName', (req, res) => {
     res.sendFile(__dirname + '/public/image/' + req.params.imgName)
 })
 
-app.post('/chatOn', (req, res) => {
+app.post('/chatOn', isLogin ,(req, res) => {
     console.log('성공');
     let today = new Date();
-    let docu = {member : [req.body.write, req.user._id], today, title : '새로생긴 채팅방'}
+    let docu = {member : [ObjectId(req.body.write), req.user._id], today, title : '새로생긴 채팅방'}
     db.collection('chatRoom').insertOne(docu, (err, result) => {
         console.log(req.user._id);
     })
 });
 
-app.get('/chat', (req, res) => {
-    db.collection('chatRoom').findOne({member : req.user._id}, (err, result)=>{
+app.get('/chat', isLogin ,(req, res) => {
+    db.collection('chatRoom').find({member : req.user._id}).toArray((err, result)=>{
         res.render('chat.ejs', {data : result})
+    })
+})
+
+app.post('/message', isLogin ,(req, res) => {
+
+    let chatContent = {
+        parent : req.body.parent,
+        content : req.body.content,
+        userid : req.user._id,
+        data : new Date(),
+    }
+
+    db.collection('chatSend').insertOne(chatContent).then(()=>{
+        console.log(chatContent.parent);
     })
 })

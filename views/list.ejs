@@ -70,13 +70,9 @@
             method : 'POST',
             url : '/chatOn',
             data : {write : writer}
-          }).done((result) =>{
-            $.ajax({
-              method : 'GET',
-              url : '/chat'
-            }).dom((result) => {
-              console.log('good');
-            })
+          }).then(() => {
+            console.log('ㅋㅋ')
+            $.get('/chat')
           })
         })
 
