@@ -227,7 +227,7 @@ app.post('/chatOn', (req, res) => {
 });
 
 app.get('/chat', (req, res) => {
-    db.collection('chatRoom').find().toArray((err, result)=>{
+    db.collection('chatRoom').findOne({member : req.user._id}, (err, result)=>{
         res.render('chat.ejs', {data : result})
     })
 })
