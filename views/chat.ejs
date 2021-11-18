@@ -50,7 +50,7 @@ float: right;
             <ul class="list-group chat-list">
 
               <% for(let i = 0; i < data.length; i++) { %>
-              <li class="list-group-item" data-id=""="<%= data[i]._id %>">
+              <li class="list-group-item" data-id="<%= data[i]._id %>">
                 <h6><%=data[i].title%></h6>
                 <h6 class="text-small"><%=data[i].member[0]%></h6>
                 <p><%= data[i]._id %></p>
@@ -62,8 +62,9 @@ float: right;
       
            <div class="col-9 p-0">
              <div class="chat-room">
+
                 <ul class="list-group chat-content">
-                  <li><span class="chat-box">채팅방1 내용</span></li>
+                  <li><span class="chat-box"></span></li>
                 </ul>
 
 
@@ -80,13 +81,26 @@ float: right;
       </div> 
       
       <script>
-        let parentId;
+        var parentId;
+        var eventsource;
+        var messageDetail;
 
-        $('.list-group-item').click((e) =>{
-          $(this).css({"background-color" : "#eee"});
-          parentId = $(this).attr('data-id');
-          console.log(parentId);
-        });
+        $('.list-group-item').click(function (){
+        $(this).css('background-color', '#eee');
+        parentId = $(this).attr('data-id');
+        eventsource = new EventSource('/asdf/' + parentId);
+        $('.chat-content').html('');
+
+
+        eventsource.addEventListener('test', (e)=>{
+          console.log(JSON.parse(e.data));
+          messageDetail = JSON.parse(e.data);
+          messageDetail.forEach((e) => {
+            $('.chat-content').append(`<li><span class="chat-box"> ${e.content} </span></li>`)
+          });
+
+        })
+});
 
         $('#send').click((e) => {
           let contents = $('#chat-input').val();

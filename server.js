@@ -194,6 +194,7 @@ app.get('/search', (req, res) => {
 
 
 let multer = require('multer');
+const { json } = require('body-parser');
 var storage = multer.diskStorage({
     destination : (req, file, cb) => {
         cb(null, './public/image');
@@ -245,4 +246,28 @@ app.post('/message', isLogin ,(req, res) => {
     db.collection('chatSend').insertOne(chatContent).then(()=>{
         console.log(chatContent.parent);
     })
-})
+});
+
+app.get('/asdf/:id', isLogin, (req,res)=>{
+    res.writeHead(200, {
+        "Connection" : "keep-alive",
+        "Content-Type" : "text/event-stream",
+        "Cache-CControl" : "no-cache",
+    });
+
+    db.collection('chatSend').find({parent : req.params.id}).toArray().then((result) =>{
+        res.write('event: test\n');
+        res.write('data:' + JSON.stringify(result) + '\n\n');
+    })
+
+    const pipeline = [
+        {$match: { 'fullDocument.parent' : req.params.id} }
+    ];
+    const collection = db.collection('chatSend');
+    const changeStream = collection.watch(pipeline);
+    changeStream.on('change', (result)=>{
+        res.write('event: test\n');
+        res.write('data:' + JSON.stringify([result.fullDocument]) + '\n\n');
+    });
+
+});
