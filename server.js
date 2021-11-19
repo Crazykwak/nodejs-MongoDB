@@ -1,6 +1,11 @@
 const express = require('express');  // 익스프레스
 const bodyParser= require('body-parser')  //데이터를 body로 때겠다.
-const app = express();  
+const app = express();
+
+const http = require('http').createServer(app);
+const {Server} = require('socket.io');
+const io = new Server(http);
+
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true})) 
 require('dotenv').config()
@@ -17,11 +22,33 @@ MongoClient.connect(process.env.DB_URL, (err, client) =>{
     if(err) {return console.log(err)};
     db = client.db('TodoList');
 
-    app.listen(8080, function(){
+    http.listen(8080, function(){
         console.log('listening on 8080');
     });
 })
 const { ObjectId } = require('mongodb');
+
+app.get('/socket', (req, res) =>{
+    res.render('socket.ejs');
+});
+
+io.on('connection', (socket) => {
+    console.log(socket.id);
+
+
+    socket.on('user-send', (data) => {
+        io.emit('broadcast', data);
+    });
+
+    socket.on('joinroom', (data) => {
+        socket.join('room1');
+    });
+
+    socket.on('room1-send', (data) => {
+        io.to('room1').emit('broadcast', data);
+    });
+});
+
 
 app.get('/', function(req, res){
     res.render('index.ejs');
@@ -269,5 +296,4 @@ app.get('/asdf/:id', isLogin, (req,res)=>{
         res.write('event: test\n');
         res.write('data:' + JSON.stringify([result.fullDocument]) + '\n\n');
     });
-
 });
