@@ -63,19 +63,33 @@
           window.location.replace('/search?value=' + searchType);
         });
 
+        const chatOnFun = (data) => {
+          return new Promise((resolve, reject) => {
+            $.ajax({
+            method : 'POST',
+            url : '/chatOn',
+            data : {write : data}
+          })
+          })
+        };
+
+
+        const joinChat = () => {
+          return new Promise((resolve, reject) => {
+            $.ajax({
+            method : 'GET',
+            url : '/chat',
+          })
+          })
+        };
+
         $('.chat').click((e) =>{
           let writer = e.target.dataset.id;
 
-          $.ajax({
-            method : 'POST',
-            url : '/chatOn',
-            data : {write : writer}
-          }).then(() => {
-            console.log('ㅋㅋ')
-            $.get('/chat')
-          })
+          chatOnFun(writer)
+          .then(joinChat())
+          .then(console.log('안되는데요')); //이거 어케할지 연구할 것
         })
-
 
       </script>
 
