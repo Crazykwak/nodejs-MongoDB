@@ -22,7 +22,7 @@ MongoClient.connect(process.env.DB_URL, (err, client) =>{
     if(err) {return console.log(err)};
     db = client.db('TodoList');
 
-    http.listen(8080, function(){
+    http.listen(8090, function(){
         console.log('listening on 8080');
     });
 })
